@@ -3,7 +3,7 @@ FROM alpine:3.20
 # Official Nezha v2 agent binary, pinned into the image at build time.
 # Runtime auto-update is disabled in config.yml, so the image is the version.
 ARG TARGETARCH
-RUN apk add --no-cache curl unzip ca-certificates \
+RUN apk add --no-cache curl unzip ca-certificates busybox-extras \
  && case "$TARGETARCH" in \
       arm64) A=arm64 ;; \
       arm)   A=arm64 ;; \

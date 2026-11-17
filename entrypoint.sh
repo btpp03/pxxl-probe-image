@@ -36,6 +36,11 @@ EOF
 chmod 0600 /opt/probe/config.yml
 
 (
+    # The agent lets NZ_* env vars override config.yml scalars. Keep the
+    # normalized config authoritative by dropping the raw inputs first.
+    unset NZ_SERVER NZ_CLIENT_SECRET NZ_TLS NZ_UUID \
+          NZ_DISABLE_AUTO_UPDATE NZ_DISABLE_FORCE_UPDATE \
+          NZ_DISABLE_COMMAND_EXECUTE NZ_SKIP_CONNECTION_COUNT
     while true; do
         echo "[probe] agent start"
         /opt/probe/nezha-agent -c /opt/probe/config.yml 2>&1
@@ -46,7 +51,7 @@ chmod 0600 /opt/probe/config.yml
 
 P="${PORT:-80}"
 if [ "$P" != "80" ]; then
-    busybox httpd -f -p 0.0.0.0:80 -h /opt/probe/www >/dev/null 2>&1 &
+    httpd -f -p 0.0.0.0:80 -h /opt/probe/www >/dev/null 2>&1 &
 fi
 echo "[probe] health responder on 0.0.0.0:${P}"
-exec busybox httpd -f -p "0.0.0.0:${P}" -h /opt/probe/www
+exec httpd -f -p "0.0.0.0:${P}" -h /opt/probe/www
